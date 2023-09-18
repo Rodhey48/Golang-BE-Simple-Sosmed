@@ -6,7 +6,6 @@ import (
 	_ "simple_sosmed/docs"
 	"simple_sosmed/routes"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
 
@@ -30,7 +29,7 @@ import (
 // @description Type "Bearer" followed by a space and JWT token.
 
 func main() {
-	loadEnv()
+	// loadEnv()
 	configs.InitDatabase()
 	e := echo.New()
 	routes.InitRoute(e)
@@ -46,9 +45,9 @@ func getPort() string {
 	return ":" + port
 }
 
-func loadEnv() {
-	err := godotenv.Load()
-	if err != nil {
-		panic("Failed load env file")
-	}
-}
+// func loadEnv() {
+// 	err := godotenv.Load()
+// 	if err != nil {
+// 		panic("Failed load env file")
+// 	}
+// }
