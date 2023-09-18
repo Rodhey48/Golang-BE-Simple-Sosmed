@@ -25,5 +25,8 @@ func InitRoute(e *echo.Echo) {
 	}
 	eAuth.Use(echojwt.WithConfig(config))
 	eAuth.GET("/me", controllers.GetUsersLoggedController)
-
+	eAuth.GET("/posts", controllers.GetPost)
+	eAuth.POST("/posts", controllers.CreatePostingController)
+	eAuth.PUT("/posts/:id", controllers.EditPostUserController)
+	eAuth.DELETE("posts/:id", controllers.DeletePostController)
 }

@@ -3,7 +3,8 @@ package configs
 import (
 	"fmt"
 	"os"
-	"simple_sosmed/models/users/entity"
+	entityPost "simple_sosmed/models/posts/entity"
+	entityUser "simple_sosmed/models/users/entity"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -27,7 +28,7 @@ func InitDatabase() {
 }
 
 func Migration() {
-	err := DB.AutoMigrate(entity.User{})
+	err := DB.AutoMigrate(entityUser.User{}, entityPost.Posts{})
 	if err != nil {
 		fmt.Println(err.Error())
 		panic("failed to connect database")
