@@ -14,7 +14,7 @@ type Posts struct {
 	User    entity.User `gorm:"foreignKey:UserId;references:Id"`
 }
 
-func (posts *Posts) MapFromDto(postsDto dto.PostDto, user entity.User) {
+func (posts *Posts) MapFromDto(postsDto dto.PostUserDto, user entity.User) {
 	posts.Message = postsDto.Message
 	posts.PicUrl = postsDto.PicUrl
 	posts.UserId = user.Id

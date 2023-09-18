@@ -9,12 +9,15 @@ import (
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func InitRoute(e *echo.Echo) {
 	e.Use(middleware.Logger())
 	e.POST("/login", controllers.LoginController)
 	e.POST("/register", controllers.RegisterController)
+
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	eAuth := e.Group("")
 	config := echojwt.Config{

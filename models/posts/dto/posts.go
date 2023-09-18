@@ -1,6 +1,6 @@
 package dto
 
-type PostDto struct {
+type PostUserDto struct {
 	Message string `json:"message" form:"message"`
 	PicUrl  string `json:"picUrl" form:"picUrl"`
 }

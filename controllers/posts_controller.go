@@ -14,6 +14,14 @@ import (
 	"gorm.io/gorm"
 )
 
+// CreateTags		Posts
+// @Summary			Get user post
+// @Description		Get user post
+// @Produce			application/json
+// @Tags			Posts
+// @Success			200 {object} base.BaseRespose{}
+// @Router			/posts [get]
+// @Security 		BearerAuth
 func GetPost(c echo.Context) error {
 	user := middlewares.ClaimsToken(c)
 	var userEntity usersEntity.User
@@ -48,8 +56,16 @@ func GetPost(c echo.Context) error {
 	})
 }
 
+// CreateTags		Posts
+// @Summary			Create user post
+// @Description		Create user post
+// @Produce			application/json
+// @Tags			Posts
+// @Success			201 {object} base.BaseRespose{}
+// @Router			/posts [POST]
+// @Security 		BearerAuth
 func CreatePostingController(c echo.Context) error {
-	var postUser dto.PostDto
+	var postUser dto.PostUserDto
 	c.Bind(&postUser)
 
 	user := middlewares.ClaimsToken(c)
@@ -81,17 +97,26 @@ func CreatePostingController(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, base.BaseRespose{
+	return c.JSON(http.StatusCreated, base.BaseRespose{
 		Status:  true,
 		Message: "Success posting",
 		Data:    postUser,
 	})
 }
 
+// CreateTags		Posts
+// @Summary			Update user post
+// @Description		Update user post
+// @Produce			application/json
+// @Param			idPost path string true "update post by id"
+// @Tags			Posts
+// @Success			201 {object} base.BaseRespose{}
+// @Router			/posts/{idPost} [PUT]
+// @Security 		BearerAuth
 func EditPostUserController(c echo.Context) error {
 	idPost := c.Param("id")
 
-	var postUser dto.PostDto
+	var postUser dto.PostUserDto
 	c.Bind(&postUser)
 
 	user := middlewares.ClaimsToken(c)
@@ -142,7 +167,7 @@ func EditPostUserController(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, base.BaseRespose{
+	return c.JSON(http.StatusCreated, base.BaseRespose{
 		Status:  true,
 		Message: "Success edit posting",
 		Data:    postsEntity,
@@ -150,6 +175,15 @@ func EditPostUserController(c echo.Context) error {
 
 }
 
+// CreateTags		Posts
+// @Summary			Delete user post
+// @Description		Delete user post
+// @Produce			application/json
+// @Param			idPost path string true "delete posts by id"
+// @Tags			Posts
+// @Success			200 {object} base.BaseRespose{}
+// @Router			/posts/{idPost} [DELETE]
+// @Security 		BearerAuth
 func DeletePostController(c echo.Context) error {
 	idPost := c.Param("id")
 

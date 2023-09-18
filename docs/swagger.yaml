@@ -1,0 +1,171 @@
+definitions:
+  base.BaseRespose:
+    properties:
+      data: {}
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+  dto.UserLogin:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.UserRegister:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: support@swagger.io
+    name: API Simple Suppor
+    url: http://www.swagger.io/support
+  description: This is a sample server Simple_Sosmed server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Simple Sosmed API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      description: login user data in Db.
+      parameters:
+      - description: payload body
+        in: body
+        name: tags
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseRespose'
+      summary: login user
+      tags:
+      - Auth
+  /me:
+    get:
+      description: logged user data.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseRespose'
+      security:
+      - BearerAuth: []
+      summary: logged user
+      tags:
+      - Auth
+  /posts:
+    get:
+      description: Get user post
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseRespose'
+      security:
+      - BearerAuth: []
+      summary: Get user post
+      tags:
+      - Posts
+    post:
+      description: Create user post
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/base.BaseRespose'
+      security:
+      - BearerAuth: []
+      summary: Create user post
+      tags:
+      - Posts
+  /posts/{idPost}:
+    delete:
+      description: Delete user post
+      parameters:
+      - description: update tags by id
+        in: path
+        name: idPost
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.BaseRespose'
+      security:
+      - BearerAuth: []
+      summary: Delete user post
+      tags:
+      - Posts
+    put:
+      description: Update user post
+      parameters:
+      - description: update tags by id
+        in: path
+        name: idPost
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/base.BaseRespose'
+      security:
+      - BearerAuth: []
+      summary: Update user post
+      tags:
+      - Posts
+  /register:
+    post:
+      description: Save user data in Db.
+      parameters:
+      - description: payload body form
+        in: body
+        name: tags
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserRegister'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/base.BaseRespose'
+      summary: create user
+      tags:
+      - Auth
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
