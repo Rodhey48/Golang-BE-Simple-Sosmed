@@ -2,56 +2,62 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"simple_sosmed/configs"
+	"simple_sosmed/helper"
+	"simple_sosmed/middlewares"
 	"simple_sosmed/models/base"
 	"simple_sosmed/models/users/dto"
 	"simple_sosmed/models/users/entity"
 	"simple_sosmed/models/users/response"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
-func AddUsersController(c echo.Context) error {
+func RegisterController(c echo.Context) error {
 	var userRegister dto.UserRegister
 	c.Bind(&userRegister)
-	fmt.Println("Daftar user userRegister", userRegister)
 
-	if userRegister.Email == "" {
+	var userEntity entity.User
+	userEntity.MapFromRegister(userRegister)
+
+	userEntity.Email = strings.Trim(userEntity.Email, " ")
+	userEntity.Email = strings.ToLower(userEntity.Email)
+
+	validate := userEntity.ValidateData()
+
+	if !validate.Status {
+		return c.JSON(http.StatusBadRequest, validate)
+	}
+
+	var foundUser entity.User
+
+	found := configs.DB.Find(&foundUser, "email = ?", userEntity.Email)
+
+	if found.RowsAffected > 0 {
 		return c.JSON(http.StatusBadRequest, base.BaseRespose{
 			Status:  false,
-			Message: "Email still empty",
+			Message: "Email already use",
 			Data:    nil,
 		})
 	}
 
-	var userDatabase entity.User
-	userDatabase.Name = userRegister.Name
-	userDatabase.Email = userRegister.Email
-	userDatabase.Password = userRegister.Password
-
-	fmt.Println("Daftar user userDatabase", userDatabase)
-
-	// result := configs.DB.Create(&userDatabase)
-	result := configs.DB.Create(&userDatabase)
+	result := configs.DB.Create(&userEntity)
 
 	if result.Error != nil {
 		return c.JSON(http.StatusInternalServerError, base.BaseRespose{
 			Status:  false,
-			Message: "Failed add data users",
-			Data:    nil,
+			Message: "Internal Server Error",
+			Data:    result.Error.Error(),
 		})
 	}
 
-	var userResponse response.UserResponse
-	userResponse.MapFromDatabase(userDatabase)
-
-	return c.JSON(http.StatusCreated, base.BaseRespose{
+	return c.JSON(http.StatusOK, base.BaseRespose{
 		Status:  true,
-		Message: "Success add data users",
-		Data:    userResponse,
+		Message: "Success register",
+		Data:    userRegister,
 	})
 }
 
@@ -59,24 +65,30 @@ func LoginController(c echo.Context) error {
 	var userLogin dto.UserLogin
 	c.Bind(&userLogin)
 
-	var userDatabase entity.User
-	userDatabase.MapFromLogin(userLogin)
+	var userEntity entity.User
 
 	result := configs.DB.
-		Where("email = ? AND password = ?",
-			userDatabase.Email,
-			userDatabase.Password).First(&userDatabase)
+		Where("email = ?",
+			userLogin.Email).First(&userEntity)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return c.JSON(http.StatusUnauthorized, base.BaseRespose{
+		return c.JSON(http.StatusNotFound, base.BaseRespose{
 			Status:  false,
-			Message: "Failed login check email and password",
+			Message: "Email user not found",
+			Data:    nil,
+		})
+	}
+
+	if !helper.CheckPasswordHash(userLogin.Password, userEntity.Password) {
+		return c.JSON(http.StatusNotFound, base.BaseRespose{
+			Status:  false,
+			Message: "Email or Password user is wrong",
 			Data:    nil,
 		})
 	}
 
 	var userResponse response.UserResponse
-	userResponse.MapFromDatabase(userDatabase)
+	userResponse.MapFromDatabase(userEntity)
 
 	return c.JSON(http.StatusOK, base.BaseRespose{
 		Status:  true,
@@ -86,22 +98,24 @@ func LoginController(c echo.Context) error {
 
 }
 
-func GetUsersController(c echo.Context) error {
-	var users []entity.User
+func GetUsersLoggedController(c echo.Context) error {
+	user := middlewares.ClaimsToken(c)
+	var userEntity entity.User
 
-	result := configs.DB.Find(&users)
+	result := configs.DB.
+		Where("id = ?",
+			user.Id).Select("id, name, email").First(&userEntity)
 
-	if result.Error != nil {
-		return c.JSON(http.StatusInternalServerError, base.BaseRespose{
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return c.JSON(http.StatusNotFound, base.BaseRespose{
 			Status:  false,
-			Message: "Failed get data users",
+			Message: "Email user not found",
 			Data:    nil,
 		})
 	}
-
 	return c.JSON(http.StatusOK, base.BaseRespose{
 		Status:  true,
-		Message: "Success get data users",
-		Data:    users,
+		Message: "Success get logged user info",
+		Data:    userEntity,
 	})
 }
