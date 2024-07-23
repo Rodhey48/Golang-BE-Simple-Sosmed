@@ -105,7 +105,7 @@ paths:
     delete:
       description: Delete user post
       parameters:
-      - description: update tags by id
+      - description: delete posts by id
         in: path
         name: idPost
         required: true
@@ -125,7 +125,7 @@ paths:
     put:
       description: Update user post
       parameters:
-      - description: update tags by id
+      - description: update post by id
         in: path
         name: idPost
         required: true

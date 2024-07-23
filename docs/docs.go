@@ -146,7 +146,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "update tags by id",
+                        "description": "update post by id",
                         "name": "idPost",
                         "in": "path",
                         "required": true
@@ -178,7 +178,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "update tags by id",
+                        "description": "delete posts by id",
                         "name": "idPost",
                         "in": "path",
                         "required": true
